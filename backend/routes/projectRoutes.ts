@@ -1,9 +1,23 @@
-import * as express from "express"
-import {getProjects, getAllProjects, createProjects, updateProject, deleteProject} from '../controllers/projectController'
+import * as express from "express";
+import {
+  getProjectsHandler,
+  getAllProjectsHandler,
+  createProjectsHandler,
+  updateProjectHandler,
+  deleteProjectHandler,
+} from "../controllers/projectController";
 
-const route = express.Router()
+const route = express.Router();
 
-route.route("/").get(getAllProjects).post(createProjects)
-route.route("/:id").get(getProjects).put(updateProject).delete(deleteProject)
+route
+    .route("/")
+    .get(getAllProjectsHandler)
+    .post(createProjectsHandler);
+    
+route
+  .route("/:id")
+  .get(getProjectsHandler)
+  .put(updateProjectHandler)
+  .delete(deleteProjectHandler);
 
 export default route;

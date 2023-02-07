@@ -1,30 +1,27 @@
 import { Request, Response } from "express"
 import * as asyncHandler from 'express-async-handler'
 import mongoose from "mongoose";
-import Project from "../models/projectModel"
+import { checkisValidObjectId } from "../database/db";
+import { createProject, deltedProject, getProjectById, getProjects, updateProject } from "../services/projectService";
 
 //@desc Get all projects
 //@route GET /api/projects
 //@access Public
-export const getAllProjects = asyncHandler(async (req:Request, res:Response)=>{
-    const projects = await Project.find();
-    res.json(projects)
+export const getAllProjectsHandler = asyncHandler(async (req:Request, res:Response)=>{
+    const project = await getProjects();
+    res.status(200).json(project)
 })
 
 //@desc Create projects
 //@route Post /api/projects
 //@access Private
-export const createProjects = asyncHandler(async (req:Request, res:Response)=>{
+export const createProjectsHandler = asyncHandler(async (req:Request, res:Response)=>{
     if(!req.body.title){
         res.status(400)
         throw new Error ('Title is required')
     }
 
-    const project= await Project.create(req.body);
-    if(!project){
-        res.status(400)
-        throw new Error ('Project not created')
-    }
+    await createProject(req.body)
     res.status(201).json({message:'Project created'})
 
 })
@@ -33,12 +30,10 @@ export const createProjects = asyncHandler(async (req:Request, res:Response)=>{
 //@desc Get  projects
 //@route GET /api/projects/:id
 //@access Public
-export const getProjects = asyncHandler(async (req:Request, res:Response)=>{
-    const project = await Project.findById(req.params.id)
-    if(!project){
-        res.status(404)
-        throw new Error ('Project not found')
-    }
+export const getProjectsHandler = asyncHandler(async (req:Request, res:Response)=>{
+
+    checkisValidObjectId(req.params.id)
+    const project = await getProjectById(req.params.id);
     res.status(200).json(project)
 })
 
@@ -46,20 +41,13 @@ export const getProjects = asyncHandler(async (req:Request, res:Response)=>{
 //@desc Update projects
 //@route Put /api/projects/:id
 //@access Private
-export const updateProject =asyncHandler(async ( req:Request, res:Response)=>{
+export const updateProjectHandler =asyncHandler(async ( req:Request, res:Response)=>{
     if(!req.body.title){
         res.status(400)
         throw new Error ('Title is required')
     }
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)){
-        res.status(400);
-        throw new Error(`${req.params.id} is not a valid id`)
-    }
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, {new:true})
-    if(!project){
-        res.status(404)
-        throw new Error ('Project not found')
-    }
+    checkisValidObjectId(req.params.id)
+    const project = await updateProject(req.params.id, req.body)
 
     res.json({message:"update projects", project})
 })
@@ -68,16 +56,9 @@ export const updateProject =asyncHandler(async ( req:Request, res:Response)=>{
 //@desc Delete projects
 //@route Delete /api/projects
 //@access Private
-export const deleteProject =asyncHandler(async (req:Request, res:Response)=>{
-    const project = await Project.findByIdAndDelete(req.params.id)
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)){
-        res.status(400);
-        throw new Error(`${req.params.id} is not a valid id`)
-    }
-    if(!project){
-        res.status(404)
-        throw new Error ('Project not found')
-    }
-    res.status(200).json({message: `Delete Project ${req.params.id}`})
+export const deleteProjectHandler =asyncHandler(async (req:Request, res:Response)=>{
+    checkisValidObjectId(req.params.id)
+    const project = await deltedProject(req.params.id)
+    res.status(200).json({message: `Delete Project ${req.params.id}`, project})
 })
 

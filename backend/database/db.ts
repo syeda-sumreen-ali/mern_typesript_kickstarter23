@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { MONGO_URI } from "../utils/config";
+import HttpException from "../utils/httpsException";
 
 export const connectDB = async() =>{
     if(!MONGO_URI){
@@ -13,4 +14,10 @@ export const connectDB = async() =>{
         console.log(error.message);
         process.exit(1);
     }
+}
+
+export const checkisValidObjectId= (id:string)=>{
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        throw new HttpException(`${id} is not a valid id` , 400)
+    }   
 }
