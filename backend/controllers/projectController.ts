@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import * as asyncHandler from 'express-async-handler'
 import mongoose from "mongoose";
-import Project from "../models/projectModels"
+import Project from "../models/projectModel"
 
 //@desc Get all projects
 //@route GET /api/projects
