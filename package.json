@@ -19,11 +19,13 @@
   },
   "homepage": "https://github.com/syeda-sumreen-ali/mern_typesript_kickstarter23#readme",
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "colors.ts": "^1.0.20",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-async-handler": "^1.2.0",
-    "mongoose": "^6.5.1"
+    "mongoose": "^6.5.1",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@types/colors": "^1.2.1",
