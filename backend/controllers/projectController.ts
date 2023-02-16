@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import * as asyncHandler from 'express-async-handler'
 import mongoose from "mongoose";
 import { checkisValidObjectId } from "../database/db";
+import { sanitizeProject } from "../sanitizer/projectSanitizer";
 import { createProject, deltedProject, getProjectById, getProjects, updateProject } from "../services/projectService";
 
 //@desc Get all projects
@@ -16,12 +17,9 @@ export const getAllProjectsHandler = asyncHandler(async (req:Request, res:Respon
 //@route Post /api/projects
 //@access Private
 export const createProjectsHandler = asyncHandler(async (req:Request, res:Response)=>{
-    if(!req.body.title){
-        res.status(400)
-        throw new Error ('Title is required')
-    }
-
-    await createProject(req.body)
+   
+    const sanitizedProject= sanitizeProject(req.body)
+    await createProject(sanitizedProject)
     res.status(201).json({message:'Project created'})
 
 })
@@ -42,12 +40,10 @@ export const getProjectsHandler = asyncHandler(async (req:Request, res:Response)
 //@route Put /api/projects/:id
 //@access Private
 export const updateProjectHandler =asyncHandler(async ( req:Request, res:Response)=>{
-    if(!req.body.title){
-        res.status(400)
-        throw new Error ('Title is required')
-    }
+    
+    const sanitizedProject = sanitizeProject(req.body)
     checkisValidObjectId(req.params.id)
-    const project = await updateProject(req.params.id, req.body)
+    const project = await updateProject(req.params.id, sanitizedProject)
 
     res.json({message:"update projects", project})
 })
@@ -58,7 +54,7 @@ export const updateProjectHandler =asyncHandler(async ( req:Request, res:Respons
 //@access Private
 export const deleteProjectHandler =asyncHandler(async (req:Request, res:Response)=>{
     checkisValidObjectId(req.params.id)
-    const project = await deltedProject(req.params.id)
-    res.status(200).json({message: `Delete Project ${req.params.id}`, project})
+    await deltedProject(req.params.id)
+    res.status(200).json({message: `Delete Project ${req.params.id}`})
 })
 
